@@ -1,19 +1,35 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
-trigger:
+ trigger:
 - main
-
+ 
 pool:
-  vmImage: ubuntu-latest
-
+  name: Default
+  demands:
+- agent.name == myagent1
+ 
 steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
-
 - script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+    # Update the package list
+    sudo apt-get update
+    
+    # Install prerequisites
+    sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
+    
+    # Add Docker’s official GPG key
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+    
+    # Add Docker repository
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+    
+    # Update the package list again
+    sudo apt-get update
+    
+    # Install Docker
+    sudo apt-get install -y docker-ce
+    
+    # Start and enable Docker service
+    sudo systemctl start docker
+    sudo systemctl enable docker
+    
+    # Verify Docker installation
+    docker --version
+  displayName: 'Install Docker'
